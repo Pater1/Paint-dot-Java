@@ -2,6 +2,7 @@ package com.example.patrickconner.paint_dot_java;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,12 +10,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
     ConstraintLayout colorSet;
     LinearLayout colorBG;
     SeekBar seekColorH, seekColorS, seekColorV;
+    TextView seekLabelH, seekLabelS, seekLabelV;
     Button colorConfirm;
     float[] colorCom = new float[3];
     @Override
@@ -28,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         seekColorH.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                colorCom[0] = progress/ (float)seekBar.getMax();
+                colorCom[0] = (progress/ (float)seekBar.getMax()) * 360;
                 ColorUpdate();
             }
 
@@ -79,6 +82,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         colorConfirm = (Button)findViewById(R.id.ColorConfirm);
+        seekLabelH = (TextView)findViewById(R.id.LabelH);
+        seekLabelS = (TextView)findViewById(R.id.LabelS);
+        seekLabelV = (TextView)findViewById(R.id.LabelV);
+        ColorUpdate();
         colorSet.setVisibility(View.GONE);
     }
 
@@ -113,17 +120,18 @@ public class MainActivity extends AppCompatActivity {
         colorBG.setBackgroundColor(color);
         colorConfirm.setBackgroundColor(color);
 
-        int r, g, b;
         float[] invHsv = new float[3];
-        Color.colorToHSV(color, invHsv);
-        r = 255-Color.red(color);
-        invHsv[1] = invHsv[1] > 0.5f? 0.0f: 1.0f;
-        invHsv[2] = invHsv[2] > 0.5f? 0.0f: 1.0f;
+        invHsv[0] =  (colorCom[0] + 180) % 360;
+        invHsv[1] = 1 - colorCom[1];
+        invHsv[2] = 1 - colorCom[2];
+        int colorInv = Color.HSVToColor(invHsv);
 
-        int colorInv = Color.rgb(r,g,b);
-        seekColorH.setBackgroundColor(colorInv);
-        seekColorS.setBackgroundColor(colorInv);
-        seekColorV.setBackgroundColor(colorInv);
+        seekColorH.getProgressDrawable().setColorFilter(colorInv, PorterDuff.Mode.SRC_ATOP);
+        seekColorS.getProgressDrawable().setColorFilter(colorInv, PorterDuff.Mode.SRC_ATOP);
+        seekColorV.getProgressDrawable().setColorFilter(colorInv, PorterDuff.Mode.SRC_ATOP);
+        seekLabelH.setTextColor(colorInv);
+        seekLabelS.setTextColor(colorInv);
+        seekLabelV.setTextColor(colorInv);
         colorConfirm.setTextColor(colorInv);
 
     }
