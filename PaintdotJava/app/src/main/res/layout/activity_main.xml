@@ -85,6 +85,20 @@
                     android:layout_weight="1"
                     android:onClick="BrushSizeSet"
                     android:text="Brush Size" />
+
+                <Button
+                    android:id="@+id/button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Erase" />
+
+                <Button
+                    android:id="@+id/button8"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Sculpt" />
             </LinearLayout>
 
         </LinearLayout>
@@ -186,6 +200,61 @@
                     android:layout_marginBottom="8dp"
                     android:layout_marginEnd="8dp"
                     android:onClick="ColorPush"
+                    android:text="Confirm"
+                    android:textSize="25dp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/BrushSizeSubmenu"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:background="#FAFAFA"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.85">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/LabelPx"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:text="PX"
+                        android:textSize="32dp" />
+
+                    <SeekBar
+                        android:id="@+id/BrushSize"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:layout_weight="1"
+                        android:max="255"
+                        tools:layout_editor_absoluteX="203dp"
+                        tools:layout_editor_absoluteY="276dp" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/BrushSizeConfirm"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:background="@android:color/white"
+                    android:onClick="BrushSizePush"
                     android:text="Confirm"
                     android:textSize="25dp"
                     android:textStyle="bold"

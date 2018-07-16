@@ -14,18 +14,20 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
-    ConstraintLayout colorSet;
     LinearLayout colorBG;
     SeekBar seekColorH, seekColorS, seekColorV;
     TextView seekLabelH, seekLabelS, seekLabelV;
     Button colorConfirm;
     float[] colorCom = new float[3];
+
+    LinearLayout brushSizeBG;
+    SeekBar seekBrushSize;
+    Integer brushSize = 10;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        colorSet = (ConstraintLayout)findViewById(R.id.ColorSupermenu);
         colorBG = (LinearLayout)findViewById(R.id.ColorSubmenu);
         seekColorH = (SeekBar)findViewById(R.id.ColorH);
         seekColorH.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -86,7 +88,27 @@ public class MainActivity extends AppCompatActivity {
         seekLabelS = (TextView)findViewById(R.id.LabelS);
         seekLabelV = (TextView)findViewById(R.id.LabelV);
         ColorUpdate();
-        colorSet.setVisibility(View.GONE);
+        colorBG.setVisibility(View.GONE);
+
+        brushSizeBG = (LinearLayout)findViewById(R.id.BrushSizeSubmenu);
+        seekBrushSize = (SeekBar)findViewById(R.id.BrushSize);
+        seekBrushSize.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                brushSize = progress;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        brushSizeBG.setVisibility(View.GONE);
     }
 
     public Action OnClear;
@@ -113,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
     public Action1<Integer> OnColorChange;
     Integer color = Color.BLACK;
     public void ColorSet(View view){
-        colorSet.setVisibility(View.VISIBLE);
+        colorBG.setVisibility(View.VISIBLE);
     }
     public void ColorUpdate(){
         color = Color.HSVToColor(colorCom);
@@ -137,16 +159,15 @@ public class MainActivity extends AppCompatActivity {
     }
     public void ColorPush(View view){
         if(OnColorChange != null) OnColorChange.Execute(color);
-        colorSet.setVisibility(View.GONE);
+        colorBG.setVisibility(View.GONE);
     }
 
     public Action1<Integer> OnBrushSizeSet;
     public void BrushSizeSet(View view){
-        //submenu up
+        brushSizeBG.setVisibility(View.VISIBLE);
     }
     public void BrushSizePush(View view){
-        //submenu down
-        Integer radius = 0;
-        if(OnBrushSizeSet != null) OnBrushSizeSet.Execute(radius);
+        if(OnBrushSizeSet != null) OnBrushSizeSet.Execute(brushSize);
+        brushSizeBG.setVisibility(View.GONE);
     }
 }
