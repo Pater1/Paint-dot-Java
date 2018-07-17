@@ -1,5 +1,6 @@
 package com.example.patrickconner.paint_dot_java;
 
+import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
 
@@ -9,9 +10,11 @@ import java.util.List;
 public class PathPoints extends Path {
 	
 	private List<Point> points;
+	private Paint paint;
 	
-	public PathPoints() {
+	public PathPoints(Paint paint) {
 		super();
+		this.paint = paint;
 		points = new ArrayList<>();
 	}
 	
@@ -24,5 +27,9 @@ public class PathPoints extends Path {
 	
 	public List<Point> getPoints() {
 		return points;
+	}
+	
+	public Paint getPaint() {
+		return paint;
 	}
 }

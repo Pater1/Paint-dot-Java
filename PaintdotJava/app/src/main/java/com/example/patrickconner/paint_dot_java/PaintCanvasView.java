@@ -4,11 +4,15 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.MaskFilter;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -17,9 +21,9 @@ public class PaintCanvasView extends View {
 	
 	private Stack<Command> undoStack, redoStack;
 	private List<PathPoints> paths;
+	private float curX, curY, dx, dy;
 	private PathPoints curPath;
-	private float curX, curY;
-	private Paint paint;
+	private Paint curPaint;
 	private Paint.Style paintStyle;
 	private boolean isErasing;
 	
@@ -39,14 +43,12 @@ public class PaintCanvasView extends View {
 		
 		paintStyle = Paint.Style.STROKE;
 		
-		curPath = new PathPoints();
-		
-		paint = new Paint();
-		paint.setAntiAlias(true);
-		paint.setColor(Color.BLACK);
-		paint.setStyle(paintStyle);
-		paint.setStrokeJoin(Paint.Join.ROUND);
-		paint.setStrokeWidth(4f);
+		curPaint = new Paint();
+		curPaint.setAntiAlias(true);
+		curPaint.setColor(Color.BLACK);
+		curPaint.setStyle(paintStyle);
+		curPaint.setStrokeJoin(Paint.Join.ROUND);
+		curPaint.setStrokeWidth(4f);
 	}
 	
 	@Override
@@ -61,7 +63,12 @@ public class PaintCanvasView extends View {
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
 		
-		canvas.drawPath(curPath, paint);
+		for (PathPoints p : paths) {
+			canvas.drawPath(p, p.getPaint());
+		}
+		if (curPath != null) {
+			canvas.drawPath(curPath, curPaint);
+		}
 	}
 	
 	public void changeStrokeColor(int color) {
@@ -69,11 +76,25 @@ public class PaintCanvasView extends View {
 	}
 	
 	public void changeStrokeSize(float size) {
-		paint.setStrokeWidth(size);
+		curPaint.setStrokeWidth(size);
 	}
 	
-	public void saveImage() {
-	
+	public void saveImage(String fileName) {
+		FileOutputStream out = null;
+		try {
+			out = new FileOutputStream(fileName);
+			bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} finally {
+			if (out != null) {
+				try {
+					out.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 	
 	public void clearCanvas() {
@@ -84,7 +105,7 @@ public class PaintCanvasView extends View {
 	public void undo() {
 		if (!undoStack.empty()) {
 			Command commandUndo = undoStack.pop();
-			commandUndo.undo();
+			commandUndo.undo(this);
 			redoStack.push(commandUndo);
 		}
 	}
@@ -92,7 +113,7 @@ public class PaintCanvasView extends View {
 	public void redo() {
 		if (!redoStack.empty()) {
 			Command commandRedo = redoStack.pop();
-			commandRedo.execute();
+			commandRedo.execute(this);
 			undoStack.push(commandRedo);
 		}
 	}
@@ -108,7 +129,7 @@ public class PaintCanvasView extends View {
 			paintStyle = Paint.Style.STROKE;
 		}
 		
-		paint.setStyle(paintStyle);
+		curPaint.setStyle(paintStyle);
 	}
 	
 	public void offsetPath(MotionEvent event) {
@@ -144,18 +165,22 @@ public class PaintCanvasView extends View {
 	}
 	
 	private void startTouch(float x, float y) {
+		redoStack.clear();
+		
 		if (!isErasing) {
-			curPath = new PathPoints();
+			curPath = new PathPoints(curPaint);
 			curPath.moveTo(x, y);
 			curX = x;
 			curY = y;
+			
+			paths.add(curPath);
 		}
 	}
 	
 	private void moveTouch(float x, float y) {
 		if (!isErasing) {
-			float dx = Math.abs(x - curX);
-			float dy = Math.abs(y - curY);
+			dx = Math.abs(x - curX);
+			dy = Math.abs(y - curY);
 			
 			if (dx >= TOLERANCE && dy >= TOLERANCE) {
 				curPath.quadTo(curX, curY, (x + curX) / 2, (y + curY) / 2);
@@ -168,10 +193,23 @@ public class PaintCanvasView extends View {
 	private void upTouch() {
 		if (!isErasing) {
 			curPath.moveTo(curX, curY);
+			curPath = null;
 		}
 	}
 	
 	private PathPoints getCollidingPath(float x, float y) throws Exception {
 		throw new Exception("not implemented yet");
+	}
+	
+	public PathPoints getCurPath() {
+		return curPath;
+	}
+	
+	public void setCurPath(PathPoints curPath) {
+		this.curPath = curPath;
+	}
+	
+	public Paint getCurPaint() {
+		return curPaint;
 	}
 }
