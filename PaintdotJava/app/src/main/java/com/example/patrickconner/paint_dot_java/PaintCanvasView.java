@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.MaskFilter;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -19,9 +18,10 @@ import java.util.Stack;
 
 public class PaintCanvasView extends View {
 	
-	private Stack<Command> undoStack, redoStack;
+	private Stack<Bitmap> undoStack, redoStack;
 	private List<PathPoints> paths;
-	private float curX, curY, dx, dy;
+	private float curX;
+	private float curY;
 	private PathPoints curPath;
 	private Paint curPaint;
 	private Paint.Style paintStyle;
@@ -49,6 +49,8 @@ public class PaintCanvasView extends View {
 		curPaint.setStyle(paintStyle);
 		curPaint.setStrokeJoin(Paint.Join.ROUND);
 		curPaint.setStrokeWidth(4f);
+		
+		
 	}
 	
 	@Override
@@ -105,17 +107,17 @@ public class PaintCanvasView extends View {
 	
 	public void undo() {
 		if (!undoStack.empty()) {
-			Command commandUndo = undoStack.pop();
-			commandUndo.undo(this);
-			redoStack.push(commandUndo);
+			Bitmap prevBitmap = undoStack.pop();
+			redoStack.push(bitmap);
+			bitmap = prevBitmap;
 		}
 	}
 	
 	public void redo() {
 		if (!redoStack.empty()) {
-			Command commandRedo = redoStack.pop();
-			commandRedo.execute(this);
-			undoStack.push(commandRedo);
+			Bitmap prevBitmap = redoStack.pop();
+			undoStack.push(bitmap);
+			bitmap = prevBitmap;
 		}
 	}
 	
@@ -180,8 +182,8 @@ public class PaintCanvasView extends View {
 	
 	private void moveTouch(float x, float y) {
 		if (!isErasing) {
-			dx = Math.abs(x - curX);
-			dy = Math.abs(y - curY);
+			float dx = Math.abs(x - curX);
+			float dy = Math.abs(y - curY);
 			
 			if (dx >= TOLERANCE && dy >= TOLERANCE) {
 				curPath.quadTo(curX, curY, (x + curX) / 2, (y + curY) / 2);
@@ -195,6 +197,7 @@ public class PaintCanvasView extends View {
 		if (!isErasing) {
 			curPath.moveTo(curX, curY);
 			curPath = null;
+			undoStack.push(bitmap);
 		}
 	}
 	
