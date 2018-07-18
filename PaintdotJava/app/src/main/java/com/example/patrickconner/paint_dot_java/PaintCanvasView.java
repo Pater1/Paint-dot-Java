@@ -51,6 +51,7 @@ public class PaintCanvasView extends View {
 	
 	@Override
 	protected void onSizeChanged(int w, int h, int oldW, int oldH) {
+		if(h <= 0) h = w;
 		super.onSizeChanged(w, h, oldW, oldH);
 		
 		bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
