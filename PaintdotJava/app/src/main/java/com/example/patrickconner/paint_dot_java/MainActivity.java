@@ -109,6 +109,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         brushSizeBG.setVisibility(View.GONE);
+
+        eraseButton = (Button)findViewById(R.id.EraseToggle);
+        sculptButton = (Button)findViewById(R.id.SculptToggle);
     }
 
     public Action OnClear;
@@ -169,5 +172,44 @@ public class MainActivity extends AppCompatActivity {
     public void BrushSizePush(View view){
         if(OnBrushSizeSet != null) OnBrushSizeSet.Execute(brushSize);
         brushSizeBG.setVisibility(View.GONE);
+    }
+
+    private Button eraseButton, sculptButton;
+    private enum DrawMode{
+        Draw,
+        Erase,
+        Sculpt
+    }
+    private DrawMode drawMode = DrawMode.Draw;
+    public void setDrawMode(DrawMode setTo){
+        drawMode = setTo;
+        switch (drawMode){
+            case Erase:
+                eraseButton.setBackgroundColor(Color.YELLOW);
+                sculptButton.setBackgroundColor(Color.WHITE);
+                break;
+            case Sculpt:
+                sculptButton.setBackgroundColor(Color.YELLOW);
+                eraseButton.setBackgroundColor(Color.WHITE);
+                break;
+            default:
+                sculptButton.setBackgroundColor(Color.WHITE);
+                eraseButton.setBackgroundColor(Color.WHITE);
+                break;
+        }
+    }
+    public void ToggleErase(View view){
+        if(drawMode == DrawMode.Erase){
+            setDrawMode(DrawMode.Draw);
+        }else{
+            setDrawMode(DrawMode.Erase);
+        }
+    }
+    public void ToggleSculpt(View view){
+        if(drawMode == DrawMode.Sculpt){
+            setDrawMode(DrawMode.Draw);
+        }else{
+            setDrawMode(DrawMode.Sculpt);
+        }
     }
 }
