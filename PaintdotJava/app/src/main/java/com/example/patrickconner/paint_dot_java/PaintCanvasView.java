@@ -18,7 +18,7 @@ import java.util.Stack;
 
 public class PaintCanvasView extends View {
 	
-	private Stack<Bitmap> undoStack, redoStack;
+	private Stack<List<PathPoints>> undoStack, redoStack;
 	private List<PathPoints> paths;
 	private float curX;
 	private float curY;
@@ -45,12 +45,10 @@ public class PaintCanvasView extends View {
 		
 		curPaint = new Paint();
 		curPaint.setAntiAlias(true);
-		curPaint.setColor(Color.BLACK);
+		curPaint.setColor(Color.WHITE);
 		curPaint.setStyle(paintStyle);
 		curPaint.setStrokeJoin(Paint.Join.ROUND);
 		curPaint.setStrokeWidth(4f);
-		
-		
 	}
 	
 	@Override
@@ -65,6 +63,8 @@ public class PaintCanvasView extends View {
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
+		
+		canvas.drawARGB(255, 0, 0, 0);
 		
 		for (PathPoints p : paths) {
 			canvas.drawPath(p, p.getPaint());
@@ -101,23 +101,27 @@ public class PaintCanvasView extends View {
 	}
 	
 	public void clearCanvas() {
-		curPath.reset();
+		for (PathPoints p : paths) {
+			p.reset();
+		}
 		invalidate();
 	}
 	
 	public void undo() {
 		if (!undoStack.empty()) {
-			Bitmap prevBitmap = undoStack.pop();
-			redoStack.push(bitmap);
-			bitmap = prevBitmap;
+			List<PathPoints> prevPaths = undoStack.pop();
+			redoStack.push(paths);
+			paths = prevPaths;
+			invalidate();
 		}
 	}
 	
 	public void redo() {
 		if (!redoStack.empty()) {
-			Bitmap prevBitmap = redoStack.pop();
-			undoStack.push(bitmap);
-			bitmap = prevBitmap;
+			List<PathPoints> prevPaths = redoStack.pop();
+			undoStack.push(paths);
+			paths = prevPaths;
+			invalidate();
 		}
 	}
 	
@@ -140,7 +144,9 @@ public class PaintCanvasView extends View {
 	}
 	
 	public void sculpt(MotionEvent event) {
-	
+		for (PathPoints p : paths) {
+			p.sculpt(event);
+		}
 	}
 	
 	@Override
@@ -195,14 +201,14 @@ public class PaintCanvasView extends View {
 	
 	private void upTouch() {
 		if (!isErasing) {
-			curPath.moveTo(curX, curY);
 			curPath = null;
-			undoStack.push(bitmap);
+			List<PathPoints> pathsCopy = new ArrayList<>(paths);
+			undoStack.push(pathsCopy);
 		}
 	}
 	
-	private PathPoints getCollidingPath(float x, float y) throws Exception {
-		throw new Exception("not implemented yet");
+	private PathPoints getCollidingPath(float x, float y) {
+		throw new UnsupportedOperationException("not implemented yet");
 	}
 	
 	public PathPoints getCurPath() {

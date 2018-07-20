@@ -23,11 +23,15 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout brushSizeBG;
     SeekBar seekBrushSize;
     Integer brushSize = 10;
+    
+    PaintCanvasView canvas;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        canvas = findViewById(R.id.paintCanvasView);
         colorBG = (LinearLayout)findViewById(R.id.ColorSubmenu);
         seekColorH = (SeekBar)findViewById(R.id.ColorH);
         seekColorH.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -112,6 +116,20 @@ public class MainActivity extends AppCompatActivity {
 
         eraseButton = (Button)findViewById(R.id.EraseToggle);
         sculptButton = (Button)findViewById(R.id.SculptToggle);
+        
+        OnClear = new Action() {
+            @Override
+            public void Execute() {
+                canvas.clearCanvas();
+            }
+        };
+        
+        OnUndo = new Action() {
+			@Override
+			public void Execute() {
+				canvas.undo();
+			}
+		};
     }
 
     public Action OnClear;
