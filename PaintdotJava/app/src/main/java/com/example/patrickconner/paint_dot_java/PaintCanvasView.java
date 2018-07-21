@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.support.annotation.ColorInt;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -31,7 +32,7 @@ public class PaintCanvasView extends View {
 	private PathPoints curPath;
 	private Paint curPaint;
 	private Paint.Style paintStyle;
-	private boolean isErasing;
+	private DrawMode drawMode;
 	
 	private Bitmap bitmap;
 	private Canvas canvas;
@@ -55,6 +56,8 @@ public class PaintCanvasView extends View {
 		curPaint.setStyle(paintStyle);
 		curPaint.setStrokeJoin(Paint.Join.ROUND);
 		curPaint.setStrokeWidth(4f);
+		
+		drawMode = DrawMode.Draw;
 	}
 	
 	@Override
@@ -81,11 +84,7 @@ public class PaintCanvasView extends View {
 	}
 	
 	public void changeStrokeColor(int color) {
-	
-	}
-	
-	public void changeStrokeSize(float size) {
-		curPaint.setStrokeWidth(size);
+		setCurPaint(color, curPaint.getStyle(), curPaint.getStrokeWidth());
 	}
 	
 	public void saveImage(String fileName) {
@@ -129,10 +128,6 @@ public class PaintCanvasView extends View {
 			paths = prevPaths;
 			invalidate();
 		}
-	}
-	
-	public void toggleErase() {
-		isErasing = !isErasing;
 	}
 	
 	public void toggleFill() {
@@ -180,16 +175,6 @@ public class PaintCanvasView extends View {
 	
 	private void startTouch(float x, float y) {
 		redoStack.clear();
-
-		switch (drawMode){
-			case Draw:
-				curPath = new PathPoints(curPaint);
-				curPath.moveTo(x, y);
-				curX = x;
-				curY = y;
-
-				paths.add(curPath);
-				break;
 			case Sculpt:
 				curX = x;
 				curY = y;
@@ -197,6 +182,18 @@ public class PaintCanvasView extends View {
 			case Erase:
 				break;
 			default:
+				break;
+		
+		switch (drawMode) {
+			case Draw:
+				pushToUndo();
+				
+				curPath = new PathPoints(curPaint);
+				curPath.moveTo(x, y);
+				curX = x;
+				curY = y;
+				
+				paths.add(curPath);
 				break;
 		}
 	}
@@ -227,11 +224,9 @@ public class PaintCanvasView extends View {
 	}
 	
 	private void upTouch() {
-		switch (drawMode){
+		switch (drawMode) {
 			case Draw:
 				curPath = null;
-				List<PathPoints> pathsCopy = new ArrayList<>(paths);
-				undoStack.push(pathsCopy);
 				break;
 			case Sculpt:
 				break;
@@ -246,15 +241,26 @@ public class PaintCanvasView extends View {
 		throw new UnsupportedOperationException("not implemented yet");
 	}
 	
-	public PathPoints getCurPath() {
-		return curPath;
+	private void pushToUndo() {
+		List<PathPoints> pathsCopy = new ArrayList<>(paths.size());
+		for (PathPoints p : paths) pathsCopy.add(p);
+		undoStack.push(pathsCopy);
 	}
 	
-	public void setCurPath(PathPoints curPath) {
-		this.curPath = curPath;
+	public void setDrawMode(DrawMode drawMode) {
+		this.drawMode = drawMode;
 	}
 	
-	public Paint getCurPaint() {
-		return curPaint;
+	public void setBrushSize(float brushSize) {
+		setCurPaint(curPaint.getColor(), curPaint.getStyle(), brushSize);
+	}
+	
+	private void setCurPaint(@ColorInt int color, Paint.Style style, float strokeWidth) {
+		curPaint = new Paint();
+		curPaint.setAntiAlias(true);
+		curPaint.setColor(color);
+		curPaint.setStyle(style);
+		curPaint.setStrokeJoin(Paint.Join.ROUND);
+		curPaint.setStrokeWidth(strokeWidth);
 	}
 }
