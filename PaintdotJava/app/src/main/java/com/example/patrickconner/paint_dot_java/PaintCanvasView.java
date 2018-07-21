@@ -22,6 +22,12 @@ public class PaintCanvasView extends View {
 	private List<PathPoints> paths;
 	private float curX;
 	private float curY;
+	private float brushSize = 10;
+	public void setBrushSize(float setTo){
+		if(setTo > 0){
+			brushSize = setTo;
+		}
+	}
 	private PathPoints curPath;
 	private Paint curPaint;
 	private Paint.Style paintStyle;
@@ -143,12 +149,6 @@ public class PaintCanvasView extends View {
 	
 	}
 	
-	public void sculpt(MotionEvent event) {
-		for (PathPoints p : paths) {
-			p.sculpt(event);
-		}
-	}
-	
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		float x = event.getX();
@@ -172,38 +172,73 @@ public class PaintCanvasView extends View {
 		}
 		return true;
 	}
+
+	private DrawMode drawMode = DrawMode.Draw;
+	public void setDrawMode(DrawMode setTo){
+		drawMode = setTo;
+	}
 	
 	private void startTouch(float x, float y) {
 		redoStack.clear();
-		
-		if (!isErasing) {
-			curPath = new PathPoints(curPaint);
-			curPath.moveTo(x, y);
-			curX = x;
-			curY = y;
-			
-			paths.add(curPath);
+
+		switch (drawMode){
+			case Draw:
+				curPath = new PathPoints(curPaint);
+				curPath.moveTo(x, y);
+				curX = x;
+				curY = y;
+
+				paths.add(curPath);
+				break;
+			case Sculpt:
+				curX = x;
+				curY = y;
+				break;
+			case Erase:
+				break;
+			default:
+				break;
 		}
 	}
 	
 	private void moveTouch(float x, float y) {
-		if (!isErasing) {
-			float dx = Math.abs(x - curX);
-			float dy = Math.abs(y - curY);
-			
-			if (dx >= TOLERANCE && dy >= TOLERANCE) {
-				curPath.quadTo(curX, curY, (x + curX) / 2, (y + curY) / 2);
-				curX = x;
-				curY = y;
+		float dx = Math.abs(x - curX);
+		float dy = Math.abs(y - curY);
+
+		if (dx >= TOLERANCE && dy >= TOLERANCE) {
+			switch (drawMode){
+				case Draw:
+					curPath.quadTo(curX, curY, (x + curX) / 2, (y + curY) / 2);
+					break;
+				case Sculpt:
+					for(PathPoints p : paths){
+						p.sculpt(curX, curY, (x + curX) / 2, (y + curY) / 2, brushSize*10);
+					}
+					break;
+				case Erase:
+					break;
+				default:
+					break;
 			}
+
+			curX = x;
+			curY = y;
 		}
 	}
 	
 	private void upTouch() {
-		if (!isErasing) {
-			curPath = null;
-			List<PathPoints> pathsCopy = new ArrayList<>(paths);
-			undoStack.push(pathsCopy);
+		switch (drawMode){
+			case Draw:
+				curPath = null;
+				List<PathPoints> pathsCopy = new ArrayList<>(paths);
+				undoStack.push(pathsCopy);
+				break;
+			case Sculpt:
+				break;
+			case Erase:
+				break;
+			default:
+				break;
 		}
 	}
 	
