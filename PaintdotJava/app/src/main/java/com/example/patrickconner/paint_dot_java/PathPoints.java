@@ -18,17 +18,23 @@ public class PathPoints extends Path {
 		this.paint = paint;
 		points = new ArrayList<>();
 	}
-	
+
 	@Override
 	public void moveTo(float x, float y) {
-		super.moveTo(x, y);
-		points.add(new Point((int) x, (int) y));
+		this.moveTo(x, y, true);
 	}
-	
 	@Override
 	public void quadTo(float x1, float y1, float x2, float y2) {
+		this.quadTo(x1, y1, x2, y2, true);
+	}
+
+	public void moveTo(float x, float y, boolean add) {
+		super.moveTo(x, y);
+		if(add) points.add(new Point((int) x, (int) y));
+	}
+	public void quadTo(float x1, float y1, float x2, float y2, boolean add) {
 		super.quadTo(x1, y1, x2, y2);
-		points.add(new Point((int) x2, (int) y2));
+		if(add) points.add(new Point((int) x2, (int) y2));
 	}
 
 	public void sculpt(float x1, float y1, float x2, float y2, float range){
@@ -41,7 +47,10 @@ public class PathPoints extends Path {
 			Point np = new Point();
 			float distX = x2-p.x;
 			float distY = y2-p.y;
-			float fac = (float)Math.sqrt((distX*distX)+(distY*distY)) / range;
+			float dist = (float)Math.sqrt((distX*distX)+(distY*distY));
+			if(dist < 0) dist = 0;
+			if(dist > range) dist = range;
+			float fac = (-1/range)*dist + 1;
 
 			np.x = (int)(p.x + (dx * fac));
 			np.y = (int)(p.y + (dy * fac));
@@ -56,9 +65,9 @@ public class PathPoints extends Path {
 		this.reset();
 		for(int i = 0; i < points.size(); i++){
 			if(i == 0){
-				moveTo(points.get(i).x, points.get(i).y);
+				moveTo(points.get(i).x, points.get(i).y, false);
 			}else{
-				quadTo(points.get(i-1).x, points.get(i-1).y, points.get(i).x, points.get(i).y);
+				quadTo(points.get(i-1).x, points.get(i-1).y, points.get(i).x, points.get(i).y, false);
 			}
 		}
 	}

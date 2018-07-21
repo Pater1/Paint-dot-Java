@@ -32,12 +32,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         canvas = findViewById(R.id.paintCanvasView);
-        colorBG = (LinearLayout)findViewById(R.id.ColorSubmenu);
-        seekColorH = (SeekBar)findViewById(R.id.ColorH);
+        colorBG = (LinearLayout) findViewById(R.id.ColorSubmenu);
+        seekColorH = (SeekBar) findViewById(R.id.ColorH);
         seekColorH.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                colorCom[0] = (progress/ (float)seekBar.getMax()) * 360;
+                colorCom[0] = (progress / (float) seekBar.getMax()) * 360;
                 ColorUpdate();
             }
 
@@ -51,11 +51,11 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        seekColorS = (SeekBar)findViewById(R.id.ColorS);
+        seekColorS = (SeekBar) findViewById(R.id.ColorS);
         seekColorS.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                colorCom[1] = progress/ (float)seekBar.getMax();
+                colorCom[1] = progress / (float) seekBar.getMax();
                 ColorUpdate();
             }
 
@@ -69,11 +69,11 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        seekColorV = (SeekBar)findViewById(R.id.ColorV);
+        seekColorV = (SeekBar) findViewById(R.id.ColorV);
         seekColorV.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                colorCom[2] = progress/ (float)seekBar.getMax();
+                colorCom[2] = progress / (float) seekBar.getMax();
                 ColorUpdate();
             }
 
@@ -87,15 +87,15 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        colorConfirm = (Button)findViewById(R.id.ColorConfirm);
-        seekLabelH = (TextView)findViewById(R.id.LabelH);
-        seekLabelS = (TextView)findViewById(R.id.LabelS);
-        seekLabelV = (TextView)findViewById(R.id.LabelV);
+        colorConfirm = (Button) findViewById(R.id.ColorConfirm);
+        seekLabelH = (TextView) findViewById(R.id.LabelH);
+        seekLabelS = (TextView) findViewById(R.id.LabelS);
+        seekLabelV = (TextView) findViewById(R.id.LabelV);
         ColorUpdate();
         colorBG.setVisibility(View.GONE);
 
-        brushSizeBG = (LinearLayout)findViewById(R.id.BrushSizeSubmenu);
-        seekBrushSize = (SeekBar)findViewById(R.id.BrushSize);
+        brushSizeBG = (LinearLayout) findViewById(R.id.BrushSizeSubmenu);
+        seekBrushSize = (SeekBar) findViewById(R.id.BrushSize);
         seekBrushSize.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -114,22 +114,32 @@ public class MainActivity extends AppCompatActivity {
         });
         brushSizeBG.setVisibility(View.GONE);
 
-        eraseButton = (Button)findViewById(R.id.EraseToggle);
-        sculptButton = (Button)findViewById(R.id.SculptToggle);
-        
+        eraseButton = (Button) findViewById(R.id.EraseToggle);
+        sculptButton = (Button) findViewById(R.id.SculptToggle);
+
         OnClear = new Action() {
             @Override
             public void Execute() {
                 canvas.clearCanvas();
             }
         };
-        
         OnUndo = new Action() {
-			@Override
-			public void Execute() {
-				canvas.undo();
-			}
-		};
+            @Override
+            public void Execute() {
+                canvas.undo();
+            }
+        };
+        OnBrushSizeSet = new Action1<Integer>() {
+            public void Execute(Integer x){
+                canvas.setBrushSize(x);
+            }
+        };
+        OnDrawModeChange = new Action1<DrawMode>() {
+            @Override
+            public void Execute(DrawMode var) {
+                canvas.setDrawMode(var);
+            }
+        };
     }
 
     public Action OnClear;
@@ -193,12 +203,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private Button eraseButton, sculptButton;
-    private enum DrawMode{
-        Draw,
-        Erase,
-        Sculpt
-    }
     private DrawMode drawMode = DrawMode.Draw;
+    public Action1<DrawMode> OnDrawModeChange;
     public void setDrawMode(DrawMode setTo){
         drawMode = setTo;
         switch (drawMode){
@@ -215,6 +221,8 @@ public class MainActivity extends AppCompatActivity {
                 eraseButton.setBackgroundColor(Color.WHITE);
                 break;
         }
+
+        if(OnDrawModeChange != null) OnDrawModeChange.Execute(setTo);
     }
     public void ToggleErase(View view){
         if(drawMode == DrawMode.Erase){
