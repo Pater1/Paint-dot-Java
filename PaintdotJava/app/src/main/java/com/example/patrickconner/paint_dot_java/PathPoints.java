@@ -15,10 +15,31 @@ public class PathPoints extends Path {
 	
 	public PathPoints(Paint paint) {
 		super();
+		commonCtor(paint);
+	}
+	
+	public PathPoints(PathPoints p) {
+		super();
+		commonCtor(p.getPaint());
+		
+		for (Point point : p.getPoints()) {
+			points.add(new Point(point.x, point.y));
+		}
+		
+		redraw();
+	}
+	
+	private void commonCtor(Paint paint) {
 		this.paint = paint;
 		points = new ArrayList<>();
 	}
-
+	
+	@Override
+	public void reset() {
+		super.reset();
+//		points.clear();
+	}
+	
 	@Override
 	public void moveTo(float x, float y) {
 		this.moveTo(x, y, true);
@@ -61,6 +82,7 @@ public class PathPoints extends Path {
 		points = nPoints;
 		redraw();
 	}
+	
 	public void redraw(){
 		this.reset();
 		for(int i = 0; i < points.size(); i++){
@@ -70,6 +92,21 @@ public class PathPoints extends Path {
 				quadTo(points.get(i-1).x, points.get(i-1).y, points.get(i).x, points.get(i).y, false);
 			}
 		}
+	}
+	
+	public boolean collides(float x, float y) {
+		for (Point p : points) {
+			float dx = Math.abs(x - p.x);
+			float dy = Math.abs(y - p.y);
+			
+			float tolerance = Math.max(paint.getStrokeWidth(), 30);
+			
+			if (dx <= tolerance && dy <= tolerance) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	public List<Point> getPoints() {

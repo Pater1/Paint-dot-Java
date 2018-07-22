@@ -10,9 +10,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -32,7 +29,7 @@ public class PaintCanvasView extends View {
 	private Canvas canvas;
 	Context context;
 	
-	private static final int TOLERANCE = 3;
+	public static final int TOLERANCE = 3;
 	
 	public PaintCanvasView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -42,21 +39,14 @@ public class PaintCanvasView extends View {
 		redoStack = new Stack<>();
 		paths = new ArrayList<>();
 		
-		paintStyle = Paint.Style.STROKE;
-		
-		curPaint = new Paint();
-		curPaint.setAntiAlias(true);
-		curPaint.setColor(Color.WHITE);
-		curPaint.setStyle(paintStyle);
-		curPaint.setStrokeJoin(Paint.Join.ROUND);
-		curPaint.setStrokeWidth(4f);
+		setCurPaint(Color.BLACK, Paint.Style.STROKE, 10f);
 		
 		drawMode = DrawMode.Draw;
 	}
 	
 	@Override
 	protected void onSizeChanged(int w, int h, int oldW, int oldH) {
-		if(h <= 0) h = w;
+		if (h <= 0) h = w;
 		super.onSizeChanged(w, h, oldW, oldH);
 		
 		bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
@@ -67,13 +57,16 @@ public class PaintCanvasView extends View {
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
 		
-		canvas.drawARGB(255, 0, 0, 0);
+		canvas.drawARGB(255, 255, 255, 255);
+		this.canvas.drawARGB(255, 255, 255, 255);
 		
 		for (PathPoints p : paths) {
 			canvas.drawPath(p, p.getPaint());
+			this.canvas.drawPath(p, p.getPaint());
 		}
 		if (curPath != null) {
 			canvas.drawPath(curPath, curPaint);
+			this.canvas.drawPath(curPath, curPaint);
 		}
 	}
 	
@@ -81,28 +74,9 @@ public class PaintCanvasView extends View {
 		setCurPaint(color, curPaint.getStyle(), curPaint.getStrokeWidth());
 	}
 	
-	public void saveImage(String fileName) {
-		FileOutputStream out = null;
-		try {
-			out = new FileOutputStream(fileName);
-			bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} finally {
-			if (out != null) {
-				try {
-					out.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-	
 	public void clearCanvas() {
-		for (PathPoints p : paths) {
-			p.reset();
-		}
+		pushToUndo();
+		paths.clear();
 		invalidate();
 	}
 	
@@ -134,10 +108,6 @@ public class PaintCanvasView extends View {
 		curPaint.setStyle(paintStyle);
 	}
 	
-	public void offsetPath(MotionEvent event) {
-	
-	}
-	
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		float x = event.getX();
@@ -164,11 +134,10 @@ public class PaintCanvasView extends View {
 	
 	private void startTouch(float x, float y) {
 		redoStack.clear();
+		pushToUndo();
 		
 		switch (drawMode) {
 			case Draw:
-				pushToUndo();
-				
 				curPath = new PathPoints(curPaint);
 				curPath.moveTo(x, y);
 				curX = x;
@@ -176,12 +145,13 @@ public class PaintCanvasView extends View {
 				
 				paths.add(curPath);
 				break;
+			
+			case Erase:
 			case Sculpt:
 				curX = x;
 				curY = y;
 				break;
-			case Erase:
-				break;
+			
 			default:
 				break;
 		}
@@ -190,23 +160,30 @@ public class PaintCanvasView extends View {
 	private void moveTouch(float x, float y) {
 		float dx = Math.abs(x - curX);
 		float dy = Math.abs(y - curY);
-
+		
 		if (dx >= TOLERANCE && dy >= TOLERANCE) {
-			switch (drawMode){
+			switch (drawMode) {
 				case Draw:
 					curPath.quadTo(curX, curY, (x + curX) / 2, (y + curY) / 2);
 					break;
+				
 				case Sculpt:
-					for(PathPoints p : paths){
-						p.sculpt(curX, curY, (x + curX) / 2, (y + curY) / 2, curPaint.getStrokeWidth()*10);
+					for (PathPoints p : paths) {
+						p.sculpt(curX, curY, (x + curX) / 2, (y + curY) / 2, curPaint.getStrokeWidth() * 10);
 					}
 					break;
+				
 				case Erase:
+					int pathIndex = getCollidingPathIndex(curX, curY);
+					if (pathIndex > -1) {
+						paths.remove(pathIndex);
+					}
 					break;
+				
 				default:
 					break;
 			}
-
+			
 			curX = x;
 			curY = y;
 		}
@@ -226,13 +203,19 @@ public class PaintCanvasView extends View {
 		}
 	}
 	
-	private PathPoints getCollidingPath(float x, float y) {
-		throw new UnsupportedOperationException("not implemented yet");
+	private int getCollidingPathIndex(float x, float y) {
+		for (int i = 0; i < paths.size(); i++) {
+			if (paths.get(i).collides(x, y)) {
+				return i;
+			}
+		}
+		
+		return -1;
 	}
 	
 	private void pushToUndo() {
 		List<PathPoints> pathsCopy = new ArrayList<>(paths.size());
-		for (PathPoints p : paths) pathsCopy.add(p);
+		for (PathPoints p : paths) pathsCopy.add(new PathPoints(p));
 		undoStack.push(pathsCopy);
 	}
 	
@@ -251,5 +234,9 @@ public class PaintCanvasView extends View {
 		curPaint.setStyle(style);
 		curPaint.setStrokeJoin(Paint.Join.ROUND);
 		curPaint.setStrokeWidth(strokeWidth);
+	}
+	
+	public Bitmap getBitmap() {
+		return bitmap;
 	}
 }
