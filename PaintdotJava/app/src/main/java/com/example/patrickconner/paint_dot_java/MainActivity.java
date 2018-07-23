@@ -129,15 +129,27 @@ public class MainActivity extends AppCompatActivity {
                 canvas.undo();
             }
         };
+        OnRedo = new Action() {
+            @Override
+            public void Execute() {
+                canvas.redo();
+            }
+        };
         OnBrushSizeSet = new Action1<Integer>() {
             public void Execute(Integer x){
-                canvas.setBrushSize(x);
+                canvas.changeStrokeSize(x);
             }
         };
         OnDrawModeChange = new Action1<DrawMode>() {
             @Override
             public void Execute(DrawMode var) {
                 canvas.setDrawMode(var);
+            }
+        };
+        OnColorChange = new Action1<Integer>() {
+            @Override
+            public void Execute(Integer var) {
+                canvas.changeStrokeColor(var);
             }
         };
     }

@@ -23,11 +23,6 @@ public class PaintCanvasView extends View {
 	private float curX;
 	private float curY;
 	private float brushSize = 10;
-	public void setBrushSize(float setTo){
-		if(setTo > 0){
-			brushSize = setTo;
-		}
-	}
 	private PathPoints curPath;
 	private Paint curPaint;
 	private Paint.Style paintStyle;
@@ -51,7 +46,7 @@ public class PaintCanvasView extends View {
 		
 		curPaint = new Paint();
 		curPaint.setAntiAlias(true);
-		curPaint.setColor(Color.WHITE);
+		curPaint.setColor(curColor);
 		curPaint.setStyle(paintStyle);
 		curPaint.setStrokeJoin(Paint.Join.ROUND);
 		curPaint.setStrokeWidth(4f);
@@ -79,13 +74,16 @@ public class PaintCanvasView extends View {
 			canvas.drawPath(curPath, curPaint);
 		}
 	}
-	
+
+	int curColor = Color.WHITE;
 	public void changeStrokeColor(int color) {
-	
+		//curPaint.setColor(color);
+        curColor = color;
 	}
 	
 	public void changeStrokeSize(float size) {
-		curPaint.setStrokeWidth(size);
+		//curPaint.setStrokeWidth(size);
+		brushSize = size <= 1? 1: size;
 	}
 	
 	public void saveImage(String fileName) {
@@ -183,6 +181,13 @@ public class PaintCanvasView extends View {
 
 		switch (drawMode){
 			case Draw:
+			    curPaint = new Paint();
+                curPaint.setAntiAlias(true);
+                curPaint.setColor(curColor);
+                curPaint.setStyle(paintStyle);
+                curPaint.setStrokeJoin(Paint.Join.ROUND);
+                curPaint.setStrokeWidth(brushSize);
+
 				curPath = new PathPoints(curPaint);
 				curPath.moveTo(x, y);
 				curX = x;
