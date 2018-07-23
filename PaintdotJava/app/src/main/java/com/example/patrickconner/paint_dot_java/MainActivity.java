@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
 	LinearLayout colorBG;
 	SeekBar seekColorH, seekColorS, seekColorV;
 	TextView seekLabelH, seekLabelS, seekLabelV;
-	Button colorConfirm, moveButton, fillTypeButton;
+	Button colorConfirm, moveButton, fillTypeButton, sculptSingleButton;
 	float[] colorCom = new float[3];
 	
 	LinearLayout brushSizeBG;
@@ -130,6 +130,7 @@ public class MainActivity extends AppCompatActivity {
 		eraseButton = (Button) findViewById(R.id.EraseToggle);
 		sculptButton = (Button) findViewById(R.id.SculptToggle);
 		moveButton = (Button) findViewById(R.id.moveToggle);
+		sculptSingleButton = (Button) findViewById(R.id.sculptSingleToggle);
 
 		fillTypeButton = (Button) findViewById(R.id.fillType);
 		
@@ -311,21 +312,31 @@ public class MainActivity extends AppCompatActivity {
 				eraseButton.setBackgroundColor(Color.YELLOW);
 				sculptButton.setBackgroundColor(Color.WHITE);
 				moveButton.setBackgroundColor(Color.WHITE);
+				sculptSingleButton.setBackgroundColor(Color.WHITE);
 				break;
 			case Sculpt:
 				sculptButton.setBackgroundColor(Color.YELLOW);
 				eraseButton.setBackgroundColor(Color.WHITE);
 				moveButton.setBackgroundColor(Color.WHITE);
+				sculptSingleButton.setBackgroundColor(Color.WHITE);
 				break;
 			case Move:
 				sculptButton.setBackgroundColor(Color.WHITE);
 				eraseButton.setBackgroundColor(Color.WHITE);
 				moveButton.setBackgroundColor(Color.YELLOW);
+				sculptSingleButton.setBackgroundColor(Color.WHITE);
+				break;
+			case SculptSingle:
+				sculptButton.setBackgroundColor(Color.WHITE);
+				eraseButton.setBackgroundColor(Color.WHITE);
+				moveButton.setBackgroundColor(Color.WHITE);
+				sculptSingleButton.setBackgroundColor(Color.YELLOW);
 				break;
 			default:
 				sculptButton.setBackgroundColor(Color.WHITE);
 				eraseButton.setBackgroundColor(Color.WHITE);
 				moveButton.setBackgroundColor(Color.WHITE);
+				sculptSingleButton.setBackgroundColor(Color.WHITE);
 				break;
 		}
 		
@@ -339,7 +350,6 @@ public class MainActivity extends AppCompatActivity {
 			setDrawMode(DrawMode.Erase);
 		}
 	}
-
 	public void ToggleSculpt(View view) {
 		if (drawMode == DrawMode.Sculpt) {
 			setDrawMode(DrawMode.Draw);
@@ -347,12 +357,18 @@ public class MainActivity extends AppCompatActivity {
 			setDrawMode(DrawMode.Sculpt);
 		}
 	}
-
 	public void ToggleMove(View view) {
 		if (drawMode == DrawMode.Move) {
 			setDrawMode(DrawMode.Draw);
 		} else {
 			setDrawMode(DrawMode.Move);
+		}
+	}
+	public void ToggleSculptSingle(View view) {
+		if (drawMode == DrawMode.SculptSingle) {
+			setDrawMode(DrawMode.Draw);
+		} else {
+			setDrawMode(DrawMode.SculptSingle);
 		}
 	}
 	

@@ -82,6 +82,22 @@ public class PathPoints extends Path {
 		points = nPoints;
 		redraw();
 	}
+	@Override
+	public void offset(float dx, float dy){
+		List<Point> nPoints = new ArrayList<Point>();
+
+		for(Point p : points){
+			Point np = new Point();
+
+			np.x = (int)(p.x + dx);
+			np.y = (int)(p.y + dy);
+
+			nPoints.add(np);
+		}
+
+		points = nPoints;
+		super.offset(dx, dy);
+	}
 	
 	public void redraw(){
 		this.reset();

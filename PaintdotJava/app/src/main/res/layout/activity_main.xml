@@ -120,6 +120,13 @@
                     android:onClick="onStyleChange"/>
 
                 <Button
+                    android:id="@+id/sculptSingleToggle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Sculpt Line"
+                    android:onClick="ToggleSculptSingle"/>
+                <Button
                     android:id="@+id/moveToggle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

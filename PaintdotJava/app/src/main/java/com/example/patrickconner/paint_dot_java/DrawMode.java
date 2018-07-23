@@ -4,5 +4,6 @@ public enum DrawMode{
     Draw,
     Erase,
     Sculpt,
+    SculptSingle,
     Move
 }

@@ -159,23 +159,27 @@ public class PaintCanvasView extends View {
 				
 				paths.add(curPath);
 				break;
-			
+
+			case SculptSingle:
+			case Move:
 			case Erase:
 			case Sculpt:
 				curX = x;
 				curY = y;
 				break;
-			
+
 			default:
 				break;
 		}
 	}
-	
+
+	private PathPoints movingPath = null;
 	private void moveTouch(float x, float y) {
-		float dx = Math.abs(x - curX);
-		float dy = Math.abs(y - curY);
+		float dx = x - curX;
+		float dy = y - curY;
 		
-		if (dx >= TOLERANCE && dy >= TOLERANCE) {
+		if (Math.abs(dx) >= TOLERANCE && Math.abs(dy) >= TOLERANCE) {
+			int pathIndex;
 			switch (drawMode) {
 				case Draw:
 					curPath.quadTo(curX, curY, (x + curX) / 2, (y + curY) / 2);
@@ -188,9 +192,31 @@ public class PaintCanvasView extends View {
 					break;
 				
 				case Erase:
-					int pathIndex = getCollidingPathIndex(curX, curY);
+					pathIndex = getCollidingPathIndex(curX, curY);
 					if (pathIndex > -1) {
 						paths.remove(pathIndex);
+					}
+					break;
+
+				case Move:
+					if (movingPath == null) {
+						pathIndex = getCollidingPathIndex(curX, curY);
+						if (pathIndex > -1) {
+							movingPath = paths.get(pathIndex);
+						}
+					}else{
+						movingPath.offset(dx, dy);
+					}
+					break;
+
+				case SculptSingle:
+					if (movingPath == null) {
+						pathIndex = getCollidingPathIndex(curX, curY);
+						if (pathIndex > -1) {
+							movingPath = paths.get(pathIndex);
+						}
+					}else{
+						movingPath.sculpt(curX, curY, (x + curX) / 2, (y + curY) / 2, curPaint.getStrokeWidth() * 10);
 					}
 					break;
 				
@@ -211,6 +237,10 @@ public class PaintCanvasView extends View {
 			case Sculpt:
 				break;
 			case Erase:
+				break;
+			case SculptSingle:
+			case Move:
+				movingPath = null;
 				break;
 			default:
 				break;
