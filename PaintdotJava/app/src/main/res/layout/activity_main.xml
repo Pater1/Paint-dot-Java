@@ -1,26 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".MainActivity">
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              tools:context=".MainActivity">
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1">
+        android:padding="10dp">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:layout_height="50dp"
                 android:orientation="horizontal">
 
                 <Button
@@ -57,16 +56,14 @@
 
             </LinearLayout>
 
-            <ImageView
-                android:id="@+id/imageView2"
+            <com.example.patrickconner.paint_dot_java.PaintCanvasView
+                android:id="@+id/paintCanvasView"
                 android:layout_width="match_parent"
-                android:layout_height="838dp"
-                android:layout_weight="1"
-                app:srcCompat="@drawable/ic_launcher_background" />
+                android:layout_height="450dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
                 android:layout_weight="1"
                 android:orientation="horizontal">
 
@@ -74,7 +71,6 @@
                     android:id="@+id/button3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:onClick="ColorSet"
                     android:text="Color" />
 
@@ -82,186 +78,200 @@
                     android:id="@+id/button2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:onClick="BrushSizeSet"
                     android:text="Brush Size" />
 
                 <Button
-                    android:id="@+id/button"
+                    android:id="@+id/EraseToggle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:onClick="ToggleErase"
                     android:text="Erase" />
 
                 <Button
-                    android:id="@+id/button8"
+                    android:id="@+id/SculptToggle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:onClick="ToggleSculpt"
                     android:text="Sculpt" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Background Color"
+                    android:onClick="changeBackground"/>
             </LinearLayout>
 
         </LinearLayout>
 
         <android.support.constraint.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/ColorSupermenu">
+        android:id="@+id/ColorSupermenu"
+        android:layout_width="match_parent"
+        android:layout_height="449dp">
 
-            <LinearLayout
-                android:id="@+id/ColorSubmenu"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:background="#FAFAFA"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.8">
+        <LinearLayout
+        android:id="@+id/ColorSubmenu"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="#FAFAFA"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.8">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:orientation="horizontal">
+        <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/LabelH"
-                        android:layout_width="25dp"
-                        android:layout_height="50dp"
-                        android:text="H"
-                        android:textSize="32dp" />
+        <TextView
+        android:id="@+id/LabelH"
+        android:layout_width="25dp"
+        android:layout_height="50dp"
+        android:text="H"
+        android:textSize="32dp" />
 
-                    <SeekBar
-                        android:id="@+id/ColorH"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:layout_weight="1"
-                        android:max="255"
-                        tools:layout_editor_absoluteX="203dp"
-                        tools:layout_editor_absoluteY="276dp" />
-                </LinearLayout>
+        <SeekBar
+        android:id="@+id/ColorH"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_weight="1"
+        android:max="255"
+        tools:layout_editor_absoluteX="203dp"
+        tools:layout_editor_absoluteY="276dp" />
+        </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:orientation="horizontal">
+        <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/LabelS"
-                        android:layout_width="25dp"
-                        android:layout_height="50dp"
-                        android:text="S"
-                        android:textSize="32dp" />
+        <TextView
+        android:id="@+id/LabelS"
+        android:layout_width="25dp"
+        android:layout_height="50dp"
+        android:text="S"
+        android:textSize="32dp" />
 
-                    <SeekBar
-                        android:id="@+id/ColorS"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_weight="1"
-                        android:max="255"
-                        app:layout_constraintTop_toBottomOf="@+id/seekBar3"
-                        tools:layout_editor_absoluteX="234dp" />
-                </LinearLayout>
+        <SeekBar
+        android:id="@+id/ColorS"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="8dp"
+        android:layout_weight="1"
+        android:max="255"
+        app:layout_constraintTop_toBottomOf="@+id/seekBar3"
+        tools:layout_editor_absoluteX="234dp" />
+        </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:orientation="horizontal">
+        <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/LabelV"
-                        android:layout_width="25dp"
-                        android:layout_height="50dp"
-                        android:text="V"
-                        android:textSize="32dp" />
+        <TextView
+        android:id="@+id/LabelV"
+        android:layout_width="25dp"
+        android:layout_height="50dp"
+        android:text="V"
+        android:textSize="32dp" />
 
-                    <SeekBar
-                        android:id="@+id/ColorV"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_weight="1"
-                        android:max="255"
-                        app:layout_constraintTop_toBottomOf="@+id/seekBar2"
-                        tools:layout_editor_absoluteX="170dp" />
-                </LinearLayout>
+        <SeekBar
+        android:id="@+id/ColorV"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="8dp"
+        android:layout_weight="1"
+        android:max="255"
+        app:layout_constraintTop_toBottomOf="@+id/seekBar2"
+        tools:layout_editor_absoluteX="170dp" />
+        </LinearLayout>
 
-                <Button
-                    android:id="@+id/ColorConfirm"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:onClick="ColorPush"
-                    android:text="Confirm"
-                    android:textSize="25dp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
+        <Button
+        android:id="@+id/ColorConfirm"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:onClick="ColorPush"
+        android:text="Confirm"
+        android:textSize="25dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-            </LinearLayout>
+        </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/BrushSizeSubmenu"
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:background="#FAFAFA"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.85">
+        <LinearLayout
+        android:id="@+id/BrushSizeSubmenu"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="#FAFAFA"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.85">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:orientation="horizontal">
+        <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/LabelPx"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:text="PX"
-                        android:textSize="32dp" />
+        <TextView
+        android:id="@+id/LabelPx"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:text="PX"
+        android:textSize="32dp" />
 
-                    <SeekBar
-                        android:id="@+id/BrushSize"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:layout_weight="1"
-                        android:max="255"
-                        tools:layout_editor_absoluteX="203dp"
-                        tools:layout_editor_absoluteY="276dp" />
-                </LinearLayout>
+        <SeekBar
+        android:id="@+id/BrushSize"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_weight="1"
+        android:max="255"
+        tools:layout_editor_absoluteX="203dp"
+        tools:layout_editor_absoluteY="276dp" />
+        </LinearLayout>
 
-                <Button
-                    android:id="@+id/BrushSizeConfirm"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:background="@android:color/white"
-                    android:onClick="BrushSizePush"
-                    android:text="Confirm"
-                    android:textSize="25dp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
+        <Button
+        android:id="@+id/BrushSizeConfirm"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@android:color/white"
+        android:onClick="BrushSizePush"
+        android:text="Confirm"
+        android:textSize="25dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-            </LinearLayout>
+        </LinearLayout>
 
         </android.support.constraint.ConstraintLayout>
 
