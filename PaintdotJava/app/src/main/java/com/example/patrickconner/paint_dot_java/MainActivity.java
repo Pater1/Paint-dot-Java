@@ -158,12 +158,6 @@ public class MainActivity extends AppCompatActivity {
 				canvas.setDrawMode(var);
 			}
 		};
-		OnColorChange = new Action1<Integer>() {
-			@Override
-			public void Execute(Integer var) {
-				canvas.changeStrokeColor(var);
-			}
-		};
 		OnSave = new Function<Bitmap>() {
 			@Override
 			public Bitmap Execute() {
@@ -249,6 +243,13 @@ public class MainActivity extends AppCompatActivity {
 	Integer color = Color.BLACK;
 	
 	public void ColorSet(View view) {
+		OnColorChange = new Action1<Integer>() {
+			@Override
+			public void Execute(Integer var) {
+				canvas.changeStrokeColor(var);
+			}
+		};
+		
 		colorBG.setVisibility(View.VISIBLE);
 	}
 	
@@ -327,5 +328,15 @@ public class MainActivity extends AppCompatActivity {
 		} else {
 			setDrawMode(DrawMode.Sculpt);
 		}
+	}
+	
+	public void changeBackground(View view) {
+		OnColorChange = new Action1<Integer>() {
+			@Override
+			public void Execute(Integer var) {
+				canvas.setBackgroundColor(var);
+			}
+		};
+		colorBG.setVisibility(View.VISIBLE);
 	}
 }
