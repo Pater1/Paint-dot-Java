@@ -84,6 +84,9 @@ public class PaintCanvasView extends View {
 	public void changeStrokeColor(int color) {
 		setCurPaint(color, curPaint.getStyle(), curPaint.getStrokeWidth());
 	}
+	public void setStyle(Paint.Style style){
+		setCurPaint(curPaint.getColor(), style, curPaint.getStrokeWidth());
+	}
 	
 	public void clearCanvas() {
 		pushToUndo();

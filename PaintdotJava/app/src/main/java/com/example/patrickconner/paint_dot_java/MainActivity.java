@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.ContentValues;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Environment;
@@ -29,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
 	LinearLayout colorBG;
 	SeekBar seekColorH, seekColorS, seekColorV;
 	TextView seekLabelH, seekLabelS, seekLabelV;
-	Button colorConfirm;
+	Button colorConfirm, moveButton, fillTypeButton;
 	float[] colorCom = new float[3];
 	
 	LinearLayout brushSizeBG;
@@ -43,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		canvas = findViewById(R.id.paintCanvasView);
+		canvas = (PaintCanvasView) findViewById(R.id.paintCanvasView);
 		colorBG = (LinearLayout) findViewById(R.id.ColorSubmenu);
 		seekColorH = (SeekBar) findViewById(R.id.ColorH);
 		seekColorH.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -128,6 +129,9 @@ public class MainActivity extends AppCompatActivity {
 		
 		eraseButton = (Button) findViewById(R.id.EraseToggle);
 		sculptButton = (Button) findViewById(R.id.SculptToggle);
+		moveButton = (Button) findViewById(R.id.moveToggle);
+
+		fillTypeButton = (Button) findViewById(R.id.fillType);
 		
 		OnClear = new Action() {
 			@Override
@@ -162,6 +166,12 @@ public class MainActivity extends AppCompatActivity {
 			@Override
 			public Bitmap Execute() {
 				return canvas.getBitmap();
+			}
+		};
+		OnPaintStyleChange =  new Action1<Paint.Style>() {
+			@Override
+			public void Execute(Paint.Style style) {
+				canvas.setStyle(style);
 			}
 		};
 	}
@@ -300,14 +310,22 @@ public class MainActivity extends AppCompatActivity {
 			case Erase:
 				eraseButton.setBackgroundColor(Color.YELLOW);
 				sculptButton.setBackgroundColor(Color.WHITE);
+				moveButton.setBackgroundColor(Color.WHITE);
 				break;
 			case Sculpt:
 				sculptButton.setBackgroundColor(Color.YELLOW);
 				eraseButton.setBackgroundColor(Color.WHITE);
+				moveButton.setBackgroundColor(Color.WHITE);
+				break;
+			case Move:
+				sculptButton.setBackgroundColor(Color.WHITE);
+				eraseButton.setBackgroundColor(Color.WHITE);
+				moveButton.setBackgroundColor(Color.YELLOW);
 				break;
 			default:
 				sculptButton.setBackgroundColor(Color.WHITE);
 				eraseButton.setBackgroundColor(Color.WHITE);
+				moveButton.setBackgroundColor(Color.WHITE);
 				break;
 		}
 		
@@ -321,12 +339,20 @@ public class MainActivity extends AppCompatActivity {
 			setDrawMode(DrawMode.Erase);
 		}
 	}
-	
+
 	public void ToggleSculpt(View view) {
 		if (drawMode == DrawMode.Sculpt) {
 			setDrawMode(DrawMode.Draw);
 		} else {
 			setDrawMode(DrawMode.Sculpt);
+		}
+	}
+
+	public void ToggleMove(View view) {
+		if (drawMode == DrawMode.Move) {
+			setDrawMode(DrawMode.Draw);
+		} else {
+			setDrawMode(DrawMode.Move);
 		}
 	}
 	
@@ -338,5 +364,19 @@ public class MainActivity extends AppCompatActivity {
 			}
 		};
 		colorBG.setVisibility(View.VISIBLE);
+	}
+
+	private int curStylePntr;
+	private Paint.Style[] styles;
+	public Action1<Paint.Style> OnPaintStyleChange;
+	public void onStyleChange(View view){
+		if(styles == null){
+			styles = Paint.Style.values();
+			curStylePntr = 0;
+		}
+
+		curStylePntr = (curStylePntr + 1) % styles.length;
+		fillTypeButton.setText(styles[curStylePntr].toString());
+		if(OnPaintStyleChange != null) OnPaintStyleChange.Execute(styles[curStylePntr]);
 	}
 }
