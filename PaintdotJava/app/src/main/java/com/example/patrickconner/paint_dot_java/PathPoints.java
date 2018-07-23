@@ -3,7 +3,6 @@ package com.example.patrickconner.paint_dot_java;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
-import android.view.MotionEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,12 +31,6 @@ public class PathPoints extends Path {
 	private void commonCtor(Paint paint) {
 		this.paint = paint;
 		points = new ArrayList<>();
-	}
-	
-	@Override
-	public void reset() {
-		super.reset();
-//		points.clear();
 	}
 	
 	@Override

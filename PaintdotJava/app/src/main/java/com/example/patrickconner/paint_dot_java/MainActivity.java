@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
 		sculptButton = (Button) findViewById(R.id.SculptToggle);
 		moveButton = (Button) findViewById(R.id.moveToggle);
 		sculptSingleButton = (Button) findViewById(R.id.sculptSingleToggle);
-
+		
 		fillTypeButton = (Button) findViewById(R.id.fillType);
 		
 		OnClear = new Action() {
@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
 				return canvas.getBitmap();
 			}
 		};
-		OnPaintStyleChange =  new Action1<Paint.Style>() {
+		OnPaintStyleChange = new Action1<Paint.Style>() {
 			@Override
 			public void Execute(Paint.Style style) {
 				canvas.setStyle(style);
@@ -186,6 +186,7 @@ public class MainActivity extends AppCompatActivity {
 	public Function<Bitmap> OnSave;
 	
 	private int requestCode;
+	
 	public void CanvasSave(View view) {
 		if (OnSave != null) {
 			String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
@@ -350,6 +351,7 @@ public class MainActivity extends AppCompatActivity {
 			setDrawMode(DrawMode.Erase);
 		}
 	}
+	
 	public void ToggleSculpt(View view) {
 		if (drawMode == DrawMode.Sculpt) {
 			setDrawMode(DrawMode.Draw);
@@ -357,6 +359,7 @@ public class MainActivity extends AppCompatActivity {
 			setDrawMode(DrawMode.Sculpt);
 		}
 	}
+	
 	public void ToggleMove(View view) {
 		if (drawMode == DrawMode.Move) {
 			setDrawMode(DrawMode.Draw);
@@ -364,6 +367,7 @@ public class MainActivity extends AppCompatActivity {
 			setDrawMode(DrawMode.Move);
 		}
 	}
+	
 	public void ToggleSculptSingle(View view) {
 		if (drawMode == DrawMode.SculptSingle) {
 			setDrawMode(DrawMode.Draw);
@@ -372,27 +376,20 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 	
-	public void changeBackground(View view) {
-		OnColorChange = new Action1<Integer>() {
-			@Override
-			public void Execute(Integer var) {
-				canvas.setBackgroundColor(var);
-			}
-		};
-		colorBG.setVisibility(View.VISIBLE);
-	}
-
 	private int curStylePntr;
 	private Paint.Style[] styles;
 	public Action1<Paint.Style> OnPaintStyleChange;
-	public void onStyleChange(View view){
-		if(styles == null){
+	
+	public void onStyleChange(View view) {
+		if (styles == null) {
 			styles = Paint.Style.values();
-			curStylePntr = 0;
+			curStylePntr = 1;
 		}
-
+		
 		curStylePntr = (curStylePntr + 1) % styles.length;
-		fillTypeButton.setText(styles[curStylePntr].toString());
-		if(OnPaintStyleChange != null) OnPaintStyleChange.Execute(styles[curStylePntr]);
+		
+		String buttonText = styles[curStylePntr] == Paint.Style.FILL_AND_STROKE ? "Fill and Stroke" : styles[curStylePntr].toString();
+		fillTypeButton.setText(buttonText);
+		if (OnPaintStyleChange != null) OnPaintStyleChange.Execute(styles[curStylePntr]);
 	}
 }

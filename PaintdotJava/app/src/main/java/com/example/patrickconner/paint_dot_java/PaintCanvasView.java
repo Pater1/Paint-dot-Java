@@ -9,7 +9,6 @@ import android.support.annotation.ColorInt;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,9 +22,7 @@ public class PaintCanvasView extends View {
 	private float curY;
 	private PathPoints curPath;
 	private Paint curPaint;
-	private Paint.Style paintStyle;
 	private DrawMode drawMode;
-	private int backgroundColor;
 	
 	private Bitmap bitmap;
 	private Canvas canvas;
@@ -44,7 +41,6 @@ public class PaintCanvasView extends View {
 		setCurPaint(Color.BLACK, Paint.Style.STROKE, 10f);
 		
 		drawMode = DrawMode.Draw;
-		backgroundColor = 0xffffff;
 	}
 	
 	@Override
@@ -59,14 +55,6 @@ public class PaintCanvasView extends View {
 	@Override
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
-		
-		int r = backgroundColor & 0xffff0000;
-		int g = backgroundColor & 0xff00ff00;
-		int b = backgroundColor & 0xff0000ff;
-		
-//		Toast.makeText(context, Integer.toBinaryString(0xff00), Toast.LENGTH_LONG).show();
-//		canvas.drawARGB(255, r, g, b);
-//		this.canvas.drawARGB(255, r, g, b);
 		
 		canvas.drawARGB(255, 255, 255, 255);
 		this.canvas.drawARGB(255, 255, 255, 255);
@@ -110,16 +98,6 @@ public class PaintCanvasView extends View {
 			paths = prevPaths;
 			invalidate();
 		}
-	}
-	
-	public void toggleFill() {
-		if (paintStyle.compareTo(Paint.Style.STROKE) == 0) {
-			setCurPaint(curPaint.getColor(), Paint.Style.FILL_AND_STROKE, curPaint.getStrokeWidth());
-		} else if (paintStyle.compareTo(Paint.Style.FILL_AND_STROKE) == 0) {
-			setCurPaint(curPaint.getColor(), Paint.Style.STROKE, curPaint.getStrokeWidth());
-		}
-
-		curPaint.setStyle(paintStyle);
 	}
 	
 	@Override
@@ -261,12 +239,6 @@ public class PaintCanvasView extends View {
 		List<PathPoints> pathsCopy = new ArrayList<>(paths.size());
 		for (PathPoints p : paths) pathsCopy.add(new PathPoints(p));
 		undoStack.push(pathsCopy);
-	}
-	
-	public void setBackgroundColor(int backgroundColor) {
-//		Toast.makeText(context, Integer.toBinaryString(backgroundColor), Toast.LENGTH_LONG).show();
-		this.backgroundColor = backgroundColor;
-		invalidate();
 	}
 	
 	public void setDrawMode(DrawMode drawMode) {
